@@ -159,6 +159,11 @@ window.addEventListener('load',()=>{
             }
             // console.log(this.projectiles);
         }
+        //*********************************************************** */
+        // making projectile periodic movements; 
+        // we will make calculation for FPS: FRAME PER SEC
+        // it can be done by  1000ms (1 sec) / delta time = fps
+        // so we neeed to calculate the delta time using animationFrame, go to that **))
          
     }
     // main blue print for enemy 
@@ -175,7 +180,7 @@ window.addEventListener('load',()=>{
     }
     // Score , timer etc
     class UI{
-
+        
     }
     // brain of the game
     class Game{
@@ -189,9 +194,26 @@ window.addEventListener('load',()=>{
             this.keys=[]; // to store the control presses(up and down)
             // ammo/ bullet limit
             this.ammo=20;
+            // ******** //
+            // here for recharge of bullets ,we need 3 vars
+            this.ammoTimer=0; // this is a counter 
+            // from 0 to a ammoInterval (it takes deltaTime on each incre)
+            this.ammoInterval=500
+            // we need a max ammo , to make bullets as finite
+            this.maxAmmo=50
         }
-        update(){
+        update(deltaTime){
             this.player.update();
+            // update the ammo on recharge concept
+            // if the counter exceeds
+            if(this.ammoTimer>this.ammoInterval){
+                // if my ammo is less than max ammo, then only increment ammo
+                if(this.ammo<this.maxAmmo) this.ammo++;
+                this.ammoTimer=0;
+            }
+            else{
+                this.ammoTimer+=deltaTime;
+            }
         }
         draw(context){
             this.player.draw(context);
@@ -201,14 +223,25 @@ window.addEventListener('load',()=>{
     const game=new Game(canvas.width,canvas.height);
 
     // animation loop
-    function animate(){
+
+    // **)) 
+    // here we calculate the delta time for each animation,
+    // and pass it to Game class, so in the Game class, 
+    // we make recharge for bullet limit as per delta time
+
+    // here we get FPS as 60
+    let lastTime=0;
+    function animate(timeStamp){
+        const deltaTime=timeStamp-lastTime;
+        lastTime=timeStamp;
+        // console.log(deltaTime);
         // this will clear out the previous drawn in the rectangle range
         ctx.clearRect(0,0,canvas.width,canvas.height)
-        game.update();
+        game.update(deltaTime);
         game.draw(ctx)
-        requestAnimationFrame(animate)
+        requestAnimationFrame(animate) // it redeners the timestamp ref of the current animation froame
     }
-    animate()
+    animate(0);
 
 
 
