@@ -27,7 +27,9 @@ window.addEventListener('load',()=>{
     }
     // handling player lazers
     class Projectile{
+        constructor(){
 
+        }
     }
     // handling bolts and things
     class Particle{
