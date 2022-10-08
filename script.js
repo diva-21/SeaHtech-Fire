@@ -12,7 +12,12 @@ window.addEventListener('load',()=>{
                 if((e.key==='ArrowUp' || e.key==='ArrowDown') && this.game.keys.indexOf(e.key)===-1){
                     this.game.keys.push(e.key);
                 }
-                console.log(this.game.keys);
+                else if(e.key=== ' '){
+                    // so when ever space bar is pressed,
+                    // invoke the shoot func in player class
+                    this.game.player.shootTop();
+                }
+                // console.log(this.game.keys);
             });
             window.addEventListener('keyup',(e)=>{
                 // if u find a presence of the hold out key in the array,
@@ -20,15 +25,47 @@ window.addEventListener('load',()=>{
                 if(this.game.keys.indexOf(e.key)>-1){
                     this.game.keys.splice(this.game.keys.indexOf(e.key),1);
                 }
-                console.log(this.game.keys);
+                // console.log(this.game.keys); 
             })
         }
 
     }
     // handling player lazers
     class Projectile{
-        constructor(){
+        // this class is called by Player class as it moves and shoots, so
+        // shooting part is done here
 
+        // here it needs game info , and coordinates (x,y)
+        constructor(game,x,y){
+            this.game=game;
+            this.x=x;
+            this.y=y;
+            //  here projectile=> bullet;
+            // bullet cords
+            this.width=10;
+            this.height=3;
+            // its speed
+            this.speed=3;
+            // we will put a flag here for bullet range
+            this.markedForDeletion=false;
+        }
+        // to change the animation of the bullet
+        // if the bullet crosses the range, then we will set
+        // the flag as true and pass it to draw to remove it
+        update(){
+            // every time it(bullet) has to move forward
+            this.x+=this.speed;
+            // check for deletion, if it crosses beyond the game area(80%)
+            // then mark flag as true
+            if(this.x>this.game.width*0.8) this.markedForDeletion=true;
+
+        }
+        // to draw the bullets
+        draw(context){
+            // creating a bullet
+            context.fillStyle='yellow'; // bullet color
+            context.fillRect(this.x,this.y,this.width,this.height);
+            
         }
     }
     // handling bolts and things
@@ -38,25 +75,91 @@ window.addEventListener('load',()=>{
     // handling main char
     class Player{
         constructor(game){
+            // player cords
             this.game=game;
             this.width=120;
             this.height=190;
             this.x=20;
             this.y=100;
+            // speed of the player on Y axis, i.e up and down are launched and 
+            // maintained here
             this.speedY=0;
+            // speed val which adds on each press
             this.maxSpeed=3;
+            // here we maintain the record/list for the projectiles/bullet objs
+            // where they carry the info regarding the shoots
+            this.projectiles=[];
         }
         update(){
-            // update based on the controls
+            // update based on the player controls/moments
             if(this.game.keys.includes('ArrowUp')) this.speedY=-this.maxSpeed;
             else if(this.game.keys.includes('ArrowDown')) this.speedY=this.maxSpeed;
             else this.speedY=0;
             this.y+=this.speedY;
+
+            // here shoot controls are also updated
+
+            // When ever space bar is invoked, then the InputHnadler will invoke,
+            // the shoot command (function ) which is in our Player class
+            // So then it will invoke Projectile class to draw bullets on screen and tell
+            // me information of the each bullet object
+
+            // So when ever a bullet object crosses the range, the update method in the 
+            // Projectile class will mark flag as true, 
+            // so here Imp point is , Player Update method has to store the 
+            // bullet objs info in a list and check for the updates for each obj whether
+            // it has crossed the limits or not
+
+            // if any obj crosses the limit, we remove from screen and put only those who 
+            // are within the limits
+
+            //Now we have bullet limit, the no of bullets can be
+            // shoot, go to shoot func to know more (***)
+
+            // itgets the info of each bullet obj
+            this.projectiles.forEach(projectile=>{
+                projectile.update();
+            });
+            // now we have to filter those
+            // so get me those who have flag as false which indicates 
+            // they are within the limit;
+            this.projectiles=this.projectiles.filter(projectile=> !projectile.markedForDeletion)
+            // now we have to give this list of filtered to draw method
+            // so that it will invoke the bullets draw method to put bullets with player moment
+
+
         }
         draw(context){
-            // to specify which canvas element we want to draw
+            // to specify which canvas element we want to draw the player guy
+            context.fillStyle='black'; // player color
             context.fillRect(this.x,this.y,this.width,this.height);
+            this.projectiles.forEach(projectile=>{
+                projectile.draw(context);
+                // giving the filtered bull objs with player context to draw bullets for the player
+
+            });
         }
+        // shooting part 
+
+        // (***) =>update method
+        // here the obj creation is told in the update method,
+        // kindly refer to that
+        // now we have a bullet limit, i.e no of bullets can be 
+        // pressed, so we will 
+        // invoke the shoot method only if we have bullets/ammo
+        shootTop(){
+            // here we invoke the Projectile class and give 
+            // present player info, and coordinates
+            if(this.game.ammo>0){
+                this.projectiles.push(new Projectile(this.game,this.x+80,this.y+30)); 
+                // here +80 , +30 
+                // are for, where the bullet should start coming from
+                // i.e from mouth / chest 
+                this.game.ammo--;
+            }
+            // console.log(this.projectiles);
+        }
+         
     }
     // main blue print for enemy 
     class Enemy{
@@ -84,6 +187,8 @@ window.addEventListener('load',()=>{
             // initiating inputhandler class
             this.input=new InputHandler(this);
             this.keys=[]; // to store the control presses(up and down)
+            // ammo/ bullet limit
+            this.ammo=20;
         }
         update(){
             this.player.update();
