@@ -178,9 +178,23 @@ window.addEventListener('load',()=>{
     class Background{
 
     }
-    // Score , timer etc
+    // Score , timer, ammo sticks on the top etc
     class UI{
-        
+        constructor(game){
+            this.game=game 
+            this.fontSize=25;
+            this.fontFamily='Helvetica';
+            this.color='yellow';
+        }
+        // it doesnt need update, only draw method is enough
+        draw(context){
+            // create bullt sticks as much they are present
+            context.fillStyle=this.color;
+            for(let i=0;i<this.game.ammo;i++){
+                // moving the x corrdinate using loop i
+                context.fillRect(20+5*i,50,3,20);
+            }
+        }
     }
     // brain of the game
     class Game{
@@ -192,6 +206,7 @@ window.addEventListener('load',()=>{
             // initiating inputhandler class
             this.input=new InputHandler(this);
             this.keys=[]; // to store the control presses(up and down)
+            this.ui=new UI(this); // to create bullet and score board on top
             // ammo/ bullet limit
             this.ammo=20;
             // ******** //
@@ -217,6 +232,7 @@ window.addEventListener('load',()=>{
         }
         draw(context){
             this.player.draw(context);
+            this.ui.draw(context);
         }
     }
 
