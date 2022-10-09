@@ -246,6 +246,25 @@ window.addEventListener('load',()=>{
             }
             // score board display
             context.fillText('Score: '+this.game.score,20,40);
+            // game over message 
+            if(this.game.gameOver){
+                // if game is over then display message
+                context.textAlign='center';
+                let message1,message2;
+                if(this.game.score>this.game.winningScore){
+                    message1='You Win !';
+                    message2='Well Done'
+                }
+                else{
+                    message1='You Loose!';
+                    message2='Try again next time';
+                }
+                context.font='50px '+this.fontFamily;
+                context.fillText(message1, this.game.width*0.5, this.game.height*0.5)
+                context.font='25px '+this.fontFamily;
+                context.fillText(message2, this.game.width*0.5, this.game.height*0.5)
+            }
+            
             context.restore();
         }
     }
