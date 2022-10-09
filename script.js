@@ -173,6 +173,9 @@ window.addEventListener('load',()=>{
             this.x=this.game.width; // bcz they need to come from right to left
             this.speedX=Math.random()*-1.5 -0.5; // -0.5 to -2 px from to left
             this.markedForDeletion=false; // to destroy this enemy
+            // lives and score for each enemy
+            this.lives=5;
+            this.score=this.lives;
         }   
         update(){
             this.x+=this.speedX;
@@ -185,6 +188,10 @@ window.addEventListener('load',()=>{
             // drawing enemy 
             context.fillStyle='red';
             context.fillRect(this.x,this.y,this.width,this.height);
+            // filling the lives in rect
+            context.fillStyle='black'
+            context.font='20px Helvetica'
+            context.fillText(this.lives,this.x,this.y);
         }
     }
     // angler1 enemy
@@ -277,6 +284,26 @@ window.addEventListener('load',()=>{
             // enermy
             this.enemies.forEach(enemy=>{
                 enemy.update();
+                // so for each enermy we will check for its collision with
+                // player
+                console.log(this.checkCollision(this.player,enemy));
+                if(this.checkCollision(this.player,enemy)){
+                    // then mark del flag of that enemy as true
+                    enemy.markedForDeletion=true;
+                }
+                // foreach bullet from this player, if it hits enemy,
+                // decrease the enemy life and remove the bullet and 
+                    // if enemy dies, increase the score 
+                this.player.projectiles.forEach(projectile=>{
+                    if(this.checkCollision(projectile,enemy)){
+                        enemy.lives--;
+                        projectile.markedForDeletion=true;
+                    }
+                    if(enemy.lives<=0){
+                        enemy.markedForDeletion=true;
+                        this.score+=enemy.score;
+                    }
+                })
             })
             // only list them who are within and next
             // go to draw method below */*
@@ -305,6 +332,30 @@ window.addEventListener('load',()=>{
         // calling creating enemies periodiccallly
         addEnemy(){
             this.enemies.push(new Angler1(this));
+        }
+
+        //*********// 
+        // beautiful collision check is done below
+        // consider two rectangles R1(x1,y1,w1,h1) & R2(x2,y2,w2,h2)
+        // they will collide only if and iffffff
+
+        // for x axis
+        // if line thr x1 meets another horizontal line whose at dist of x2+w2 from it and 
+        // and line thr x2 meets another horizontal line whose at dist x1+w1 from it
+        
+        // and similar to y axis
+        //  line thr y1 meets another vertical line whose at dist of y2+h2 and
+        // line thr y2 meets another vertical line whose at dist of y1+h1
+        
+        // then only collision happens; if one of the condtns are true,
+        // they wont intersect/meet/collide as 
+        //they will be in the same y axis with dx gap or vice versa
+
+        checkCollision(rect1,rect2){
+            return (    rect1.x <rect2.x+rect2.width &&
+                        rect2.x <rect1.x+rect1.width &&
+                        rect1.y<rect2.y+rect2.height &&
+                        rect2.y <rect1.y +rect1.height)
         }
 
     }
