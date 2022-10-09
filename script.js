@@ -246,6 +246,11 @@ window.addEventListener('load',()=>{
             }
             // score board display
             context.fillText('Score: '+this.game.score,20,40);
+
+            // time feature adding, we also format the gametime, as it has
+            // decimals so we have to round it to show only 1 dec after point
+            const formattedTime=(this.game.gameTime * 0.001).toFixed(1)
+            context.fillText('Timer: '+formattedTime,20,100)
             // game over message 
             if(this.game.gameOver){
                 // if game is over then display message
@@ -260,9 +265,9 @@ window.addEventListener('load',()=>{
                     message2='Try again next time';
                 }
                 context.font='50px '+this.fontFamily;
-                context.fillText(message1, this.game.width*0.5, this.game.height*0.5)
+                context.fillText(message1, this.game.width*0.5, this.game.height*0.5-40)
                 context.font='25px '+this.fontFamily;
-                context.fillText(message2, this.game.width*0.5, this.game.height*0.5)
+                context.fillText(message2, this.game.width*0.5, this.game.height*0.5+40)
             }
             
             context.restore();
@@ -298,10 +303,14 @@ window.addEventListener('load',()=>{
             //** score board display**/
             this.score=0;
             this.winningScore=10;
-
-
+            // ** game time limit** //
+            this.gameTime=0;
+            this.timeLimit=5000;
         }
         update(deltaTime){
+            // time limit feature
+            if(!this.gameOver) this.gameTime+=deltaTime
+            if(this.gameTime>this.timeLimit) this.gameOver=true
             this.player.update();
             // update the ammo on recharge concept
             // if the counter exceeds
@@ -319,7 +328,7 @@ window.addEventListener('load',()=>{
                 enemy.update();
                 // so for each enermy we will check for its collision with
                 // player
-                console.log(this.checkCollision(this.player,enemy));
+
                 if(this.checkCollision(this.player,enemy)){
                     // then mark del flag of that enemy as true
                     enemy.markedForDeletion=true;
@@ -334,7 +343,8 @@ window.addEventListener('load',()=>{
                     }
                     if(enemy.lives<=0){
                         enemy.markedForDeletion=true;
-                        this.score+=enemy.score;
+                        // increase the score only if game is still no over
+                        if(!this.gameOver)this.score+=enemy.score;
                         if(this.score>this.winningScore) this.gameOver=true
 
                     }
