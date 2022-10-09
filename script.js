@@ -17,6 +17,9 @@ window.addEventListener('load',()=>{
                     // invoke the shoot func in player class
                     this.game.player.shootTop();
                 }
+                else if(e.key==='d'){
+                    this.game.debug=!this.game.debug
+                }
                 // console.log(this.game.keys);
             });
             window.addEventListener('keyup',(e)=>{
@@ -146,8 +149,7 @@ window.addEventListener('load',()=>{
         }
         draw(context){
             // to specify which canvas element we want to draw the player guy
-            context.fillStyle='black'; // player color
-            context.fillRect(this.x,this.y,this.width,this.height);
+            if(this.game.debug) context.strokeRect(this.x,this.y,this.width,this.height);
             // here when we are adding the player img , the entire frame is coming,
             // so we have to crop one seahorse from that entire frame
             // and shift from one seahrose to another by using update method
@@ -394,7 +396,8 @@ window.addEventListener('load',()=>{
             //* game graphics * */
             this.speed=1;
             this.background=new Background(this)
-            
+            //**game debug */
+            this.debug=true;
         }
         update(deltaTime){
             // time limit feature
