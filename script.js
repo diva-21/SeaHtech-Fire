@@ -99,8 +99,12 @@ window.addEventListener("load", () => {
       this.frameX = 0;
       this.frameY = 0;
       this.maxFrame = 37; // 1 to 38 seahorses, this shld be update using update method
+      //**power up functionality**//
+      this.powerUp=false;
+      this.powerUpTimer=0;
+      this.powerUpLimit=10000
     }
-    update() {
+    update(deltaTime) {
       // update based on the player controls/moments
       if (this.game.keys.includes("ArrowUp")) this.speedY = -this.maxSpeed;
       else if (this.game.keys.includes("ArrowDown"))
@@ -144,6 +148,28 @@ window.addEventListener("load", () => {
       if (this.frameX < this.maxFrame) this.frameX++; // if its less incre
       // so that it can move forwad,
       else this.frameX = 0; // when reach end,go to begin again
+
+      //**power up logic*/
+      //NOTE: ALSO LOGIC IS EXTENDED TO UPDATE IN GAME
+      // if he got powered up
+      if(this.powerUp){
+        // if the powerup counter is more than the limit
+        if(this.powerUpTimer>this.powerUpLimit){
+            // make it to 0 and make it as false
+            // and change the framy to noraml =0
+            this.powerUpTimer=0;
+            this.powerUp=false;
+            this.frameY=0;
+        }
+        else{
+            // else count and make shrse to upgraded one
+            this.powerUpTimer+=deltaTime;
+            this.frameY=1;
+            // and also we increase the ammo recharge,
+            // as we will put two lazers in power mode
+            this.game.ammo+=0.1
+        }
+      }
     }
     draw(context) {
       // to specify which canvas element we want to draw the player guy
@@ -153,6 +179,10 @@ window.addEventListener("load", () => {
       // so we have to crop one seahorse from that entire frame
       // and shift from one seahrose to another by using update method
       // syntax is a bit heavy , check it out ,
+      this.projectiles.forEach((projectile) => {
+        projectile.draw(context);
+        // giving the filtered bull objs with player context to draw bullets for the player
+      });
 
       // img,crop coords(source x,source y,source width,source height),,frame coords(destination x destinaton y,width,height i.e till the end of this frame)
       context.drawImage(
@@ -166,10 +196,7 @@ window.addEventListener("load", () => {
         this.width,
         this.height
       );
-      this.projectiles.forEach((projectile) => {
-        projectile.draw(context);
-        // giving the filtered bull objs with player context to draw bullets for the player
-      });
+      
     }
     // shooting part
 
@@ -191,6 +218,7 @@ window.addEventListener("load", () => {
         // i.e from mouth / chest
         this.game.ammo--;
       }
+      if(this.powerUp) this.shootBottom();
       // console.log(this.projectiles);
     }
     //*********************************************************** */
@@ -198,6 +226,23 @@ window.addEventListener("load", () => {
     // we will make calculation for FPS: FRAME PER SEC
     // it can be done by  1000ms (1 sec) / delta time = fps
     // so we neeed to calculate the delta time using animationFrame, go to that **))
+    shootBottom(){
+        if (this.game.ammo > 0) {
+            this.projectiles.push(
+              new Projectile(this.game, this.x + 80, this.y + 175)
+            );
+          }
+
+    }
+    //**power up mode */
+    enterPowerUp(){
+        this.powerUpTimer=0;
+        this.powerUp=true;
+        this.game.ammo=this.game.maxAmmo;
+    }
+    // in power mode, we use shootbottom also,2 lazwers type
+    
+
   }
   // main blue print for enemy
   class Enemy {
@@ -405,14 +450,14 @@ window.addEventListener("load", () => {
       context.shadowColor = "black";
       context.font = this.fontSize + "px " + this.fontFamily;
       // create bullt sticks as much they are present
-
+        
       for (let i = 0; i < this.game.ammo; i++) {
         // moving the x corrdinate using loop i
         context.fillRect(20 + 5 * i, 50, 3, 20);
       }
       // score board display
       context.fillText("Score: " + this.game.score, 20, 40);
-
+  //    if(this.player.powerUp) context.fillStyle = '#ffffbd';
       // time feature adding, we also format the gametime, as it has
       // decimals so we have to round it to show only 1 dec after point
       const formattedTime = (this.game.gameTime * 0.001).toFixed(1);
@@ -493,7 +538,7 @@ window.addEventListener("load", () => {
       this.background.update();
       this.background.layer4.update(); // calling it explicitly
       //
-      this.player.update();
+      this.player.update(deltaTime);
       // update the ammo on recharge concept
       // if the counter exceeds
       if (this.ammoTimer > this.ammoInterval) {
@@ -513,6 +558,11 @@ window.addEventListener("load", () => {
         if (this.checkCollision(this.player, enemy)) {
           // then mark del flag of that enemy as true
           enemy.markedForDeletion = true;
+          // power up feature *******
+            // when its a power up , then start powerup function
+          if(enemy.type='lucky') this.player.enterPowerUp()
+          // else when u colide with non lucky fish, then decre score
+          else this.score--;
         }
         // foreach bullet from this player, if it hits enemy,
         // decrease the enemy life and remove the bullet and
