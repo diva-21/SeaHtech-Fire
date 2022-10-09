@@ -227,16 +227,26 @@ window.addEventListener('load',()=>{
             this.game=game 
             this.fontSize=25;
             this.fontFamily='Helvetica';
-            this.color='yellow';
+            this.color='white';
         }
         // it doesnt need update, only draw method is enough
         draw(context){
-            // create bullt sticks as much they are present
+            // shadowing
+            context.save();
             context.fillStyle=this.color;
+            context.shadowOffsetX=2;
+            context.shadowOffsetY=2;
+            context.shadowColor='black'
+            context.font=this.fontSize +'px '+this.fontFamily;
+            // create bullt sticks as much they are present
+            
             for(let i=0;i<this.game.ammo;i++){
                 // moving the x corrdinate using loop i
                 context.fillRect(20+5*i,50,3,20);
             }
+            // score board display
+            context.fillText('Score: '+this.game.score,20,40);
+            context.restore();
         }
     }
     // brain of the game
@@ -266,6 +276,10 @@ window.addEventListener('load',()=>{
             this.enemyInterval=1000; // so for every 1sec of time, we want to 
             // create enemies
             this.gameOver=false; // to check whether game is over or not
+            //** score board display**/
+            this.score=0;
+            this.winningScore=10;
+
 
         }
         update(deltaTime){
@@ -302,6 +316,8 @@ window.addEventListener('load',()=>{
                     if(enemy.lives<=0){
                         enemy.markedForDeletion=true;
                         this.score+=enemy.score;
+                        if(this.score>this.winningScore) this.gameOver=true
+
                     }
                 })
             })
