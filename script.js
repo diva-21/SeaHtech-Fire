@@ -293,6 +293,32 @@ window.addEventListener("load", () => {
       this.score = this.lives;
     }
   }
+    // lucky enemy
+    class LuckyFish extends Enemy{
+        // to invoke this class, have afunction os addEnemy to
+        // create child enemy objs ,and make sure that they are linked
+        // to draw and updates
+        constructor(game){
+            super(game); // to invoke parents constructor =>
+            // to take basic info from enemy class regarding the coords
+            this.width=99
+            this.height=95
+            // fixing the angler air robot y axis direction
+
+            // the y coordinate can be calculated by 
+            // taking total 90% of players ht will make our flying bot to touch or go outside the box
+            // so we reduce it by our height so that it can move within the screen
+            this.y=Math.random()* (this.game.height*0.9 - this.height);
+            this.image= document.getElementById('lucky')
+            this.frameY=Math.floor(Math.random() * 2)
+
+             // lives and score for each enemy
+            this.lives=3;
+            this.score=15;
+            // lucky property
+            this.type='lucky'
+        }
+    }
   // individual & multilayer background
   // graphic feature is done here
   class Layer {
@@ -538,8 +564,9 @@ window.addEventListener("load", () => {
       //agler2 insertion, so we need a logic to have both the types
       // of enemies to be the game so
       const randomize = Math.random();
-      if (randomize < 0.5) this.enemies.push(new Angler1(this));
-      else this.enemies.push(new Angler2(this));
+      if (randomize < 0.3) this.enemies.push(new Angler1(this));
+      else if (randomize < 0.6) this.enemies.push(new Angler2(this));
+      else this.enemies.push(new LuckyFish(this));
     }
 
     //*********//
