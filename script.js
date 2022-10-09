@@ -200,20 +200,28 @@ window.addEventListener('load',()=>{
             // lives and score for each enemy
             this.lives=5;
             this.score=this.lives;
+            //frames for enemy animation
+            this.frameX=0;
+            this.frameY=0;
+            this.maxFrame=37;
         }   
         update(){
-            this.x+=this.speedX;
+            // this weill enmies to coe faster
+            this.x+=this.speedX-this.game.speed;
             // now check if the enemy has come closer to left side
             // if so , then mark flag as true
             if(this.x+this.width<0) this.markedForDeletion=true;
+            // sprite animation for enemy
+            if(this.frameX<this.maxFrame) this.frameX++;
+            else this.frameX=0;
 
         }
         draw(context){
             // drawing enemy 
-            context.fillStyle='red';
-            context.fillRect(this.x,this.y,this.width,this.height);
+           
+            if(this.game.debug) context.strokeRect(this.x,this.y,this.width,this.height);
             // filling the lives in rect
-            context.fillStyle='black'
+            context.drawImage(this.image,this.frameX*this.width,this.frameY*this.height,this.width,this.height,this.x,this.y,this.width,this.height)
             context.font='20px Helvetica'
             context.fillText(this.lives,this.x,this.y);
         }
@@ -226,14 +234,16 @@ window.addEventListener('load',()=>{
         constructor(game){
             super(game); // to invoke parents constructor =>
             // to take basic info from enemy class regarding the coords
-            this.width=228 *0.2
-            this.height=169 *0.2
+            this.width=228 
+            this.height=169 
             // fixing the angler air robot y axis direction
 
             // the y coordinate can be calculated by 
             // taking total 90% of players ht will make our flying bot to touch or go outside the box
             // so we reduce it by our height so that it can move within the screen
             this.y=Math.random()* (this.game.height*0.9 - this.height);
+            this.image= document.getElementById('angler1')
+            this.frameY=Math.floor(Math.random() * 3)
         }
 
     }
