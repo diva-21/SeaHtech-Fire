@@ -168,6 +168,42 @@ window.addEventListener('load',()=>{
     }
     // main blue print for enemy 
     class Enemy{
+        constructor(game){
+            this.game=game;
+            this.x=this.game.width; // bcz they need to come from right to left
+            this.speedX=Math.random()*-1.5 -0.5; // -0.5 to -2 px from to left
+            this.markedForDeletion=false; // to destroy this enemy
+        }   
+        update(){
+            this.x+=this.speedX;
+            // now check if the enemy has come closer to left side
+            // if so , then mark flag as true
+            if(this.x+this.width<0) this.markedForDeletion=true;
+
+        }
+        draw(context){
+            // drawing enemy 
+            context.fillStyle='red';
+            context.fillRect(this.x,this.y,this.width,this.height);
+        }
+    }
+    // angler1 enemy
+    class Angler1 extends Enemy{
+        // to invoke this class, have afunction os addEnemy to
+        // create child enemy objs ,and make sure that they are linked
+        // to draw and updates
+        constructor(game){
+            super(game); // to invoke parents constructor =>
+            // to take basic info from enemy class regarding the coords
+            this.width=228 *0.2
+            this.height=169 *0.2
+            // fixing the angler air robot y axis direction
+
+            // the y coordinate can be calculated by 
+            // taking total 90% of players ht will make our flying bot to touch or go outside the box
+            // so we reduce it by our height so that it can move within the screen
+            this.y=Math.random()* (this.game.height*0.9 - this.height);
+        }
 
     }
     // individual & multilayer background
@@ -216,6 +252,14 @@ window.addEventListener('load',()=>{
             this.ammoInterval=500
             // we need a max ammo , to make bullets as finite
             this.maxAmmo=50
+            //*****//
+            this.enemies=[]; // this will hold the enemy objs info
+            // 3 periodic vars for enemies
+            this.enemyTimer=0; // which is same as ammo timer
+            this.enemyInterval=1000; // so for every 1sec of time, we want to 
+            // create enemies
+            this.gameOver=false; // to check whether game is over or not
+
         }
         update(deltaTime){
             this.player.update();
@@ -229,11 +273,40 @@ window.addEventListener('load',()=>{
             else{
                 this.ammoTimer+=deltaTime;
             }
+            // same as we did periodic for bullet , we have to do for 
+            // enermy
+            this.enemies.forEach(enemy=>{
+                enemy.update();
+            })
+            // only list them who are within and next
+            // go to draw method below */*
+            this.enemies=this.enemies.filter(enemy => !enemy.markedForDeletion);
+            // if our enemyTimer counter exceeds then && game is not done
+            if(this.enemyTimer>this.enemyInterval && !this.gameOver){
+                this.addEnemy(); // create a new enemy
+                // set the counter back to 0
+                this.enemyTimer=0;
+            }
+            // else incre the counter
+            else{
+                this.enemyTimer+=deltaTime;
+            }
         }
         draw(context){
             this.player.draw(context);
             this.ui.draw(context);
+            // */*
+            this.enemies.forEach(enemy=>{
+                enemy.draw(context);
+            })
         }
+        // a function to invoke child enemy classes,
+        // so to call these ,we need to use deltaTime for 
+        // calling creating enemies periodiccallly
+        addEnemy(){
+            this.enemies.push(new Angler1(this));
+        }
+
     }
 
     const game=new Game(canvas.width,canvas.height);
