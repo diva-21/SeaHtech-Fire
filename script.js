@@ -89,6 +89,17 @@ window.addEventListener('load',()=>{
             // here we maintain the record/list for the projectiles/bullet objs
             // where they carry the info regarding the shoots
             this.projectiles=[];
+            //**player details**/
+
+            this.image=document.getElementById('player')
+            // in the gieven frame, we have a row of one type seahrse, and in another type
+            //so frameX wil tell us on what to take in a particular column
+            // frameY will tell on wht to take in a row
+            // for example, when u got a powerup we have to take 2nd row seahorse
+            // else normally 1st row 
+            this.frameX=0; 
+            this.frameY=0;
+            this.maxFrame=37; // 1 to 38 seahorses, this shld be update using update method
         }
         update(){
             // update based on the player controls/moments
@@ -127,12 +138,23 @@ window.addEventListener('load',()=>{
             // now we have to give this list of filtered to draw method
             // so that it will invoke the bullets draw method to put bullets with player moment
 
+            // sprite animation/ sea horse animation
+            if(this.frameX<this.maxFrame) this.frameX++; // if its less incre
+            // so that it can move forwad,
+            else this.frameX=0; // when reach end,go to begin again
 
         }
         draw(context){
             // to specify which canvas element we want to draw the player guy
             context.fillStyle='black'; // player color
             context.fillRect(this.x,this.y,this.width,this.height);
+            // here when we are adding the player img , the entire frame is coming,
+            // so we have to crop one seahorse from that entire frame
+            // and shift from one seahrose to another by using update method
+            // syntax is a bit heavy , check it out ,
+
+            // img,crop coords(source x,source y,source width,source height),,frame coords(destination x destinaton y,width,height i.e till the end of this frame)
+            context.drawImage(this.image,this.frameX*this.width,this.frameY*this.height,this.width,this.height,this.x,this.y,this.width,this.height);
             this.projectiles.forEach(projectile=>{
                 projectile.draw(context);
                 // giving the filtered bull objs with player context to draw bullets for the player
@@ -372,6 +394,7 @@ window.addEventListener('load',()=>{
             //* game graphics * */
             this.speed=1;
             this.background=new Background(this)
+            
         }
         update(deltaTime){
             // time limit feature

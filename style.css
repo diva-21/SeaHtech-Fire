@@ -13,6 +13,6 @@
     padding: 0;
     box-sizing: border-box;
 }
-#layer1,#layer2,#layer3,#layer4{
+#layer1,#layer2,#layer3,#layer4,#player{
     display: none;
 }
