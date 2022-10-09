@@ -214,11 +214,74 @@ window.addEventListener('load',()=>{
 
     }
     // individual & multilayer background
+    // graphic feature is done here
     class Layer{
+        constructor(game,image,speedModifier){
+            this.game=game;
+            this.image=image; // to control the imgs
+            this.speedModifier=speedModifier; // to set each img sppeed to create
+            // parallax animation
+            // coords
+            this.width=1768;
+            this.height=500;
+            this.x=0;
+            this.y=0;
+        }
+        // update method for running the img from right to left
+        update(){
+            //psuhing the coordinates from right top to left
+            // when x coord reaches left top or goes beyond that
+            // reinitialise x to 0 , i.e back to right top
+            if(this.x<= -this.width) this.x=0;
+            this.x-=this.game.speed *this.speedModifier
+        }
+        draw(context){
+            // 3 paras=> img,and coords
+            // since , in one frame there are 4 imgs, after that we are getting white bgd
+            // so to create a parallax effect, we draw once more after the
+            // first draw, so when this.x resets to 0,comes to the first draw,
+            //for naked eye it will look like parallax effect
+
+            // THe above is img1(4 layers) + img2(4 layers)
+            // so it goes to img1 end and then come back to x=0 at img1
+            // so the white space is not shown fo rnaked eye
+            context.drawImage(this.image,this.x,this.y);
+            context.drawImage(this.image,this.x+this.width,this.y);
+        }
 
     }
     // pulls all the background objs
+
+    //this class is invoked by Game class 
     class Background{
+        // this class will control all the layers
+        constructor(game){
+            this.game=game;
+            this.image1=document.getElementById('layer1');
+            this.image2=document.getElementById('layer2');
+            this.image3=document.getElementById('layer3');
+            this.image4=document.getElementById('layer4');
+
+            this.layer1=new Layer(this.game,this.image1,0.2);
+            this.layer2=new Layer(this.game,this.image2,0.4);
+            this.layer3=new Layer(this.game,this.image3,1);
+            this.layer4=new Layer(this.game,this.image4,1.5);
+            // here i am removing layer4 from array as its coming infront,so iwll fix them 
+            // in Game update where each layer is clled
+            this.layers=[this.layer1,this.layer2,this.layer3]; // keeps all the layer objs
+        }
+        update(){
+            //move all layer objects
+            // taking all the layer objs to have concurrent transitions
+            this.layers.forEach(layer=>layer.update()) // this will call each 
+            // update method of that coresponding layer from LAyer class
+
+        }
+        draw(context){
+            // draw all of them
+            // call draw method for each layer obj
+            this.layers.forEach(layer=>layer.draw(context));
+        }
 
     }
     // Score , timer, ammo sticks on the top etc
@@ -306,11 +369,18 @@ window.addEventListener('load',()=>{
             // ** game time limit** //
             this.gameTime=0;
             this.timeLimit=5000;
+            //* game graphics * */
+            this.speed=1;
+            this.background=new Background(this)
         }
         update(deltaTime){
             // time limit feature
             if(!this.gameOver) this.gameTime+=deltaTime
-            if(this.gameTime>this.timeLimit) this.gameOver=true
+            if(this.gameTime>this.timeLimit) this.gameOver=true;
+            // background feature
+            this.background.update()
+            this.background.layer4.update(); // calling it explicitly
+            //
             this.player.update();
             // update the ammo on recharge concept
             // if the counter exceeds
@@ -365,12 +435,17 @@ window.addEventListener('load',()=>{
             }
         }
         draw(context){
+            // background feature
+            this.background.draw(context) // this contains only 3 lyrs
+            
             this.player.draw(context);
             this.ui.draw(context);
             // */*
             this.enemies.forEach(enemy=>{
                 enemy.draw(context);
             })
+            this.background.layer4.draw(context) // this is ly4, draw bcz to overcome 
+            // -its overlapping on player draw
         }
         // a function to invoke child enemy classes,
         // so to call these ,we need to use deltaTime for 
