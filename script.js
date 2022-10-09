@@ -51,6 +51,8 @@ window.addEventListener("load", () => {
       this.speed = 3;
       // we will put a flag here for bullet range
       this.markedForDeletion = false;
+      //**projectile design */
+      this.image=document.getElementById('projectile')
     }
     // to change the animation of the bullet
     // if the bullet crosses the range, then we will set
@@ -64,9 +66,7 @@ window.addEventListener("load", () => {
     }
     // to draw the bullets
     draw(context) {
-      // creating a bullet
-      context.fillStyle = "yellow"; // bullet color
-      context.fillRect(this.x, this.y, this.width, this.height);
+        context.drawImage(this.image,this.x,this.y)
     }
   }
   // handling bolts and things
