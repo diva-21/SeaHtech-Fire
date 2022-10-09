@@ -449,15 +449,10 @@ window.addEventListener("load", () => {
       context.shadowOffsetY = 2;
       context.shadowColor = "black";
       context.font = this.fontSize + "px " + this.fontFamily;
-      // create bullt sticks as much they are present
-        
-      for (let i = 0; i < this.game.ammo; i++) {
-        // moving the x corrdinate using loop i
-        context.fillRect(20 + 5 * i, 50, 3, 20);
-      }
+      
       // score board display
       context.fillText("Score: " + this.game.score, 20, 40);
-  //    if(this.player.powerUp) context.fillStyle = '#ffffbd';
+  
       // time feature adding, we also format the gametime, as it has
       // decimals so we have to round it to show only 1 dec after point
       const formattedTime = (this.game.gameTime * 0.001).toFixed(1);
@@ -487,6 +482,12 @@ window.addEventListener("load", () => {
           this.game.height * 0.5 + 40
         );
       }
+      // create bullt sticks as much they are present
+    if(this.game.player.powerUp) context.fillStyle = '#ffffbd';
+    for (let i = 0; i < this.game.ammo; i++) {
+      // moving the x corrdinate using loop i
+      context.fillRect(20 + 5 * i, 50, 3, 20);
+    }
 
       context.restore();
     }
