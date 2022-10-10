@@ -437,7 +437,7 @@ window.addEventListener("load", () => {
     constructor(game) {
       this.game = game;
       this.fontSize = 25;
-      this.fontFamily = "Helvetica";
+      this.fontFamily = "Bangers";
       this.color = "white";
     }
     // it doesnt need update, only draw method is enough
@@ -463,23 +463,23 @@ window.addEventListener("load", () => {
         context.textAlign = "center";
         let message1, message2;
         if (this.game.score > this.game.winningScore) {
-          message1 = "You Win !";
+          message1 = "Most Wonderous!";
           message2 = "Well Done";
         } else {
-          message1 = "You Loose!";
-          message2 = "Try again next time";
+          message1 = "Blazes!";
+          message2 = "Get my repair kit";
         }
-        context.font = "50px " + this.fontFamily;
+        context.font = "70px " + this.fontFamily;
         context.fillText(
           message1,
           this.game.width * 0.5,
-          this.game.height * 0.5 - 40
+          this.game.height * 0.5 - 20
         );
         context.font = "25px " + this.fontFamily;
         context.fillText(
           message2,
           this.game.width * 0.5,
-          this.game.height * 0.5 + 40
+          this.game.height * 0.5 + 20
         );
       }
       // create bullt sticks as much they are present
