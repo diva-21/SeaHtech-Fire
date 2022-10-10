@@ -467,27 +467,21 @@ window.addEventListener("load", () => {
         constructor(game,x,y){ // here x & y are cords of whale
             super(game); // to invoke parents constructor =>
             // to take basic info from enemy class regarding the coords
-            this.width=400
-            this.height=227
+            this.width=115
+            this.height=95
 
             this.x=x;
-            this.y=y
-            // fixing the angler air robot y axis direction
-
-            // the y coordinate can be calculated by 
-            // taking total 90% of players ht will make our flying bot to touch or go outside the box
-            // so we reduce it by our height so that it can move within the screen
-            this.y=Math.random()* (this.game.height*0.9 - this.height);
+            this.y=y;
             this.image= document.getElementById('drone')
-            this.frameY=0
+            this.frameY=Math.floor(Math.random()*2);
 
              // lives and score for each enemy
-            this.lives=15;
+            this.lives=3;
             this.score=this.lives;
             // Hive property
-            this.type='hive'
+            this.type='drone'
             // this whale will move slowly
-            this.speedX=Math.random()*-1.2-0.2; // -0.2 to -1.4
+            this.speedX=Math.random()*-4.2-0.5; // -0.5 to -4.7 per frame
 
         }
     }
@@ -693,7 +687,8 @@ window.addEventListener("load", () => {
           enemy.markedForDeletion = true;
 
           // nuts and bolts padali enemy vs players
-          for(let i=0;i<5;i++){
+          // no of bolts=enemey.score
+          for(let i=0;i<enemy.score;i++){
             this.particles.push(new Particle(this,enemy.x+enemy.width*0.5,enemy.y+enemy.height*0.5))
           }
           
@@ -715,10 +710,18 @@ window.addEventListener("load", () => {
           }
           if (enemy.lives <= 0) {
             // nuts and bolts padali enemy vs players
-          for(let i=0;i<3;i++){
+            // no of bolts=enemey.score
+          for(let i=0;i<enemy.score;i++){
             this.particles.push(new Particle(this,enemy.x+enemy.width*0.5,enemy.y+enemy.height*0.5))
           }
             enemy.markedForDeletion = true;
+            //drone inside the whale feature
+            if(enemy.type==='hive'){
+              // then create new drone objs with this, and whale cords
+              // here we want the drones to start moving in diff cords, not all with same
+              // so we put random to whale cords
+              for(let i=0;i<5;i++) this.enemies.push(new Drone(this,enemy.x +Math.random()*enemy.width,enemy.y+Math.random()*enemy.height*0.5)); // we tweak ht by 0.5 to spon them in diff hights
+            }
             // increase the score only if game is still no over
             if (!this.gameOver) this.score += enemy.score;
             if (this.score > this.winningScore) this.gameOver = true;
