@@ -369,9 +369,9 @@ window.addEventListener("load", () => {
       // fixing the angler air robot y axis direction
 
       // the y coordinate can be calculated by
-      // taking total 90% of players ht will make our flying bot to touch or go outside the box
+      // taking total 95% of players ht will make our flying bot to touch or go outside the box
       // so we reduce it by our height so that it can move within the screen
-      this.y = Math.random() * (this.game.height * 0.9 - this.height);
+      this.y = Math.random() * (this.game.height * 0.95 - this.height);
       this.image = document.getElementById("angler1");
       this.frameY = Math.floor(Math.random() * 3);
 
@@ -393,9 +393,9 @@ window.addEventListener("load", () => {
       // fixing the angler air robot y axis direction
 
       // the y coordinate can be calculated by
-      // taking total 90% of players ht will make our flying bot to touch or go outside the box
+      // taking total 95% of players ht will make our flying bot to touch or go outside the box
       // so we reduce it by our height so that it can move within the screen
-      this.y = Math.random() * (this.game.height * 0.9 - this.height);
+      this.y = Math.random() * (this.game.height * 0.95 - this.height);
       this.image = document.getElementById("angler2");
       this.frameY = Math.floor(Math.random() * 2);
 
@@ -417,9 +417,9 @@ window.addEventListener("load", () => {
             // fixing the angler air robot y axis direction
 
             // the y coordinate can be calculated by 
-            // taking total 90% of players ht will make our flying bot to touch or go outside the box
+            // taking total 95% of players ht will make our flying bot to touch or go outside the box
             // so we reduce it by our height so that it can move within the screen
-            this.y=Math.random()* (this.game.height*0.9 - this.height);
+            this.y=Math.random()* (this.game.height*0.95 - this.height);
             this.image= document.getElementById('lucky')
             this.frameY=Math.floor(Math.random() * 2)
 
@@ -428,6 +428,67 @@ window.addEventListener("load", () => {
             this.score=15;
             // lucky property
             this.type='lucky'
+        }
+    }
+        // HiveWhale enemy
+        class HiveWhale extends Enemy{
+          // to invoke this class, have afunction os addEnemy to
+          // create child enemy objs ,and make sure that they are linked
+          // to draw and updates
+          constructor(game){
+              super(game); // to invoke parents constructor =>
+              // to take basic info from enemy class regarding the coords
+              this.width=400
+              this.height=227
+              // fixing the angler air robot y axis direction
+  
+              // the y coordinate can be calculated by 
+              // taking total 90% of players ht will make our flying bot to touch or go outside the box
+              // so we reduce it by our height so that it can move within the screen
+              this.y=Math.random()* (this.game.height*0.9 - this.height);
+              this.image= document.getElementById('hivewhale')
+              this.frameY=0
+  
+               // lives and score for each enemy
+              this.lives=15;
+              this.score=this.lives;
+              // Hive property
+              this.type='hive'
+              // this whale will move slowly
+              this.speedX=Math.random()*-1.2-0.2; // -0.2 to -1.4
+
+          }
+      }
+      // drone bots hich are inside hive whale
+      class Drone extends Enemy{
+        // to invoke this class, have afunction os addEnemy to
+        // create child enemy objs ,and make sure that they are linked
+        // to draw and updates
+        constructor(game,x,y){ // here x & y are cords of whale
+            super(game); // to invoke parents constructor =>
+            // to take basic info from enemy class regarding the coords
+            this.width=400
+            this.height=227
+
+            this.x=x;
+            this.y=y
+            // fixing the angler air robot y axis direction
+
+            // the y coordinate can be calculated by 
+            // taking total 90% of players ht will make our flying bot to touch or go outside the box
+            // so we reduce it by our height so that it can move within the screen
+            this.y=Math.random()* (this.game.height*0.9 - this.height);
+            this.image= document.getElementById('drone')
+            this.frameY=0
+
+             // lives and score for each enemy
+            this.lives=15;
+            this.score=this.lives;
+            // Hive property
+            this.type='hive'
+            // this whale will move slowly
+            this.speedX=Math.random()*-1.2-0.2; // -0.2 to -1.4
+
         }
     }
   // individual & multilayer background
@@ -702,6 +763,7 @@ window.addEventListener("load", () => {
       const randomize = Math.random();
       if (randomize < 0.3) this.enemies.push(new Angler1(this));
       else if (randomize < 0.6) this.enemies.push(new Angler2(this));
+      else if (randomize < 0.8) this.enemies.push(new HiveWhale(this));
       else this.enemies.push(new LuckyFish(this));
     }
 
