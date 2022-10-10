@@ -112,6 +112,13 @@ window.addEventListener("load", () => {
       else this.speedY = 0;
       this.y += this.speedY;
 
+      //vertical boundaries *****
+      //down size,here when the seahrse is going down to the screen
+      // it make only of its body to go out of bounds
+      if(this.y>this.game.height-this.height *0.5) this.y=this.game.height-this.height*0.5;
+      //up direction
+      else if(this.y<-this.height*0.5) this.y=-this.height*0.5;
+
       // here shoot controls are also updated
 
       // When ever space bar is invoked, then the InputHnadler will invoke,
@@ -286,8 +293,11 @@ window.addEventListener("load", () => {
         this.width,
         this.height
       );
-      context.font = "20px Helvetica";
-      context.fillText(this.lives, this.x, this.y);
+      if(this.game.debug){
+        context.font = "20px Helvetica";
+        context.fillText(this.lives, this.x, this.y);
+      }
+      
     }
   }
   // angler1 enemy
