@@ -93,7 +93,8 @@ window.addEventListener("load", () => {
       this.angle=0; // thry rotate 
       this.va=Math.random()*0.2-0.1; //velocity of angle -0.1 to +0.2 per frame
       this.bounced=0;
-      this.bottomBounceBoundary=Math.random()*100+60; // range is 100 to 160px
+      //bug 3 =>changing range to 60 to 140
+      this.bottomBounceBoundary=Math.random()*80+60; // range is 100 to 160px
     }
     update(){
       this.angle+=this.va;
@@ -299,7 +300,8 @@ window.addEventListener("load", () => {
     enterPowerUp(){
         this.powerUpTimer=0;
         this.powerUp=true;
-        this.game.ammo=this.game.maxAmmo;
+        // bug 2,we need to inrease if he has less ammo than maxammo
+        if(this.game.ammo<this.game.maxAmmo)this.game.ammo=this.game.maxAmmo;
     }
     // in power mode, we use shootbottom also,2 lazwers type
     
@@ -593,7 +595,7 @@ window.addEventListener("load", () => {
       this.speed = 1;
       this.background = new Background(this);
       //**game debug */
-      this.debug = true;
+      this.debug = false; // at teh start it wont come, if need press d
       // phsycis on particles
       this.particles=[]
     }
@@ -634,9 +636,9 @@ window.addEventListener("load", () => {
             this.particles.push(new Particle(this,enemy.x+enemy.width*0.5,enemy.y+enemy.height*0.5))
           }
           
-          // power up feature *******
+          // power up feature ******* //bug1
             // when its a power up , then start powerup function
-          if(enemy.type='lucky') this.player.enterPowerUp()
+          if(enemy.type==='lucky') this.player.enterPowerUp()
           // else when u colide with non lucky fish, then decre score
           else this.score--;
         }
@@ -676,12 +678,12 @@ window.addEventListener("load", () => {
         this.enemyTimer += deltaTime;
       }
     }
-    draw(context) {
+    draw(context) { //bug 4=>rearrangement of the draw eles
       // background feature
       this.background.draw(context); // this contains only 3 lyrs
-
-      this.player.draw(context);
       this.ui.draw(context);
+      this.player.draw(context);
+      
       //**particle physics */
       this.particles.forEach(particle=>particle.draw(context));
       // */*
