@@ -553,6 +553,35 @@ window.addEventListener("load", () => {
       this.layers.forEach((layer) => layer.draw(context));
     }
   }
+  // parent class which creates dust and fire explosions
+  class Explosion{
+    constructor(game,x,y){
+      this.game=game;
+      this.x=x;
+      this.y=y;
+      this.frameX=0;
+      this.spriteHeight=200;
+      //animation speed
+      this.fps=15;
+      this.timer=0; 
+      this.interval=1000/this.fps;
+      this.markedForDeletion=false
+
+    }
+    update(deltaTime){
+      this.frameX++;
+    }
+    draw(context){
+      context.drawImage(this.image,this.x,this.y)
+    }
+  }
+
+  class SmokeExplosion extends Explosion{
+
+  }
+  class FireExplosion extends Explosion{
+
+  }
   // Score , timer, ammo sticks on the top etc
   class UI {
     constructor(game) {
