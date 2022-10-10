@@ -92,22 +92,37 @@ window.addEventListener("load", () => {
       this.markedForDeletion=false;
       this.angle=0; // thry rotate 
       this.va=Math.random()*0.2-0.1; //velocity of angle -0.1 to +0.2 per frame
-      this.bounced=false;
-      this.bottomBounceBoundary
+      this.bounced=0;
+      this.bottomBounceBoundary=Math.random()*100+60; // range is 100 to 160px
     }
     update(){
       this.angle+=this.va;
       this.speedY+=this.gravity; // as its negatively intialised
       // the gravity will reduce it val to 0, so at speedY=0
       // it will be in its max height,so after that pos val of gravity makes to pull downward
-      this.x -=this.speedX; // to move horizontally
+      this.x -=this.speedX+this.game.speed; // to move horizontally
       this.y+=this.speedY// to move verticlly 
       // when it goes out of ranges
       if(this.y>this.game.height+this.size || this.x<0-this.size) this.markedForDeletion=true;
+      
+      // bounce the particles
+      if(this.y>this.game.height-this.bottomBounceBoundary && this.bounced<5){
+        // if it doesnt the ground and stillnot bounce
+        //make it bounce and make addn bounces by increasinf its speedY
+        // to make changes in gravity
+        this.bounced++; // making it t bounce 2 times
+        this.speedY*=-0.7
+      }
     }
     draw(context){
-      context.drawImage(this.image,this.frameX*this.spriteSize,this.frameY*this.spriteSize,this.spriteSize,this.spriteSize,this.x,this.y,this.size,this.size); // simce its a grid/sq ;
+      context.save();
+      // rotating the particles by translation
+      context.translate(this.x,this.y)
+      context.rotate(this.angle)
 
+      context.drawImage(this.image,this.frameX*this.spriteSize,this.frameY*this.spriteSize,this.spriteSize,this.spriteSize,this.size*-0.5,this.size*-0.5,this.size,this.size); // simce its a grid/sq ;
+
+      context.restore();
     }
   }
   // handling main char
@@ -615,7 +630,7 @@ window.addEventListener("load", () => {
           enemy.markedForDeletion = true;
 
           // nuts and bolts padali enemy vs players
-          for(let i=0;i<10;i++){
+          for(let i=0;i<5;i++){
             this.particles.push(new Particle(this,enemy.x+enemy.width*0.5,enemy.y+enemy.height*0.5))
           }
           
@@ -636,6 +651,10 @@ window.addEventListener("load", () => {
             this.particles.push(new Particle(this,enemy.x+enemy.width*0.5,enemy.y+enemy.height*0.5))
           }
           if (enemy.lives <= 0) {
+            // nuts and bolts padali enemy vs players
+          for(let i=0;i<3;i++){
+            this.particles.push(new Particle(this,enemy.x+enemy.width*0.5,enemy.y+enemy.height*0.5))
+          }
             enemy.markedForDeletion = true;
             // increase the score only if game is still no over
             if (!this.gameOver) this.score += enemy.score;
