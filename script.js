@@ -70,7 +70,46 @@ window.addEventListener("load", () => {
     }
   }
   // handling bolts and things
-  class Particle {}
+  // this class makes deathed (lol) enemy to bolts and nuts
+  class Particle {
+    constructor(game,x,y){
+      this.game=game
+      this.x=x
+      this.y=y
+      this.image=document.getElementById('gears')
+      // nav cords for the frame
+      // these will help in picking up one of the gears from the matrix gears frame
+      this.frameX=Math.floor(Math.random()*3)
+      this.frameY=Math.floor(Math.random()*3);
+      this.spriteSize=50;
+      // size modifier to take a random size(0.5-1) on gears
+      this.sizeModifier=(Math.random()*0.5+0.5).toFixed(1);
+      this.size=this.spriteSize*this.sizeModifier;
+      this.speedX=Math.random()*6-3; // -3 to +3
+      this.speedY=Math.random()*-15; // -15
+
+      this.gravity=0.5;
+      this.markedForDeletion=false;
+      this.angle=0; // thry rotate 
+      this.va=Math.random()*0.2-0.1; //velocity of angle -0.1 to +0.2 per frame
+      this.bounced=false;
+      this.bottomBounceBoundary
+    }
+    update(){
+      this.angle+=this.va;
+      this.speedY+=this.gravity; // as its negatively intialised
+      // the gravity will reduce it val to 0, so at speedY=0
+      // it will be in its max height,so after that pos val of gravity makes to pull downward
+      this.x -=this.speedX; // to move horizontally
+      this.y+=this.speedY// to move verticlly 
+      // when it goes out of ranges
+      if(this.y>this.game.height+this.size || this.x<0-this.size) this.markedForDeletion=true;
+    }
+    draw(context){
+      context.drawImage(this.image,this.frameX*this.spriteSize,this.frameY*this.spriteSize,this.spriteSize,this.spriteSize,this.x,this.y,this.size,this.size); // simce its a grid/sq ;
+
+    }
+  }
   // handling main char
   class Player {
     constructor(game) {
@@ -540,6 +579,8 @@ window.addEventListener("load", () => {
       this.background = new Background(this);
       //**game debug */
       this.debug = true;
+      // phsycis on particles
+      this.particles=[]
     }
     update(deltaTime) {
       // time limit feature
@@ -559,6 +600,9 @@ window.addEventListener("load", () => {
       } else {
         this.ammoTimer += deltaTime;
       }
+      //**Physics on partiles **/
+      this.particles.forEach(particle=>particle.update());
+      this.particles=this.particles.filter(particle=>!particle.markedForDeletion) // same as projectile model
       // same as we did periodic for bullet , we have to do for
       // enermy
       this.enemies.forEach((enemy) => {
@@ -569,6 +613,12 @@ window.addEventListener("load", () => {
         if (this.checkCollision(this.player, enemy)) {
           // then mark del flag of that enemy as true
           enemy.markedForDeletion = true;
+
+          // nuts and bolts padali enemy vs players
+          for(let i=0;i<10;i++){
+            this.particles.push(new Particle(this,enemy.x+enemy.width*0.5,enemy.y+enemy.height*0.5))
+          }
+          
           // power up feature *******
             // when its a power up , then start powerup function
           if(enemy.type='lucky') this.player.enterPowerUp()
@@ -582,6 +632,8 @@ window.addEventListener("load", () => {
           if (this.checkCollision(projectile, enemy)) {
             enemy.lives--;
             projectile.markedForDeletion = true;
+            // nuts and bolts padali on every collison with bullet and ene,y
+            this.particles.push(new Particle(this,enemy.x+enemy.width*0.5,enemy.y+enemy.height*0.5))
           }
           if (enemy.lives <= 0) {
             enemy.markedForDeletion = true;
@@ -611,6 +663,8 @@ window.addEventListener("load", () => {
 
       this.player.draw(context);
       this.ui.draw(context);
+      //**particle physics */
+      this.particles.forEach(particle=>particle.draw(context));
       // */*
       this.enemies.forEach((enemy) => {
         enemy.draw(context);

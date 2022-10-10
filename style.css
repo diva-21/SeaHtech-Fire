@@ -14,6 +14,7 @@
     padding: 0;
     box-sizing: border-box;
 }
-#layer1,#layer2,#layer3,#layer4,#player,#angler1,#angler2,#lucky,#projectile{
+#layer1,#layer2,#layer3,#layer4,#player,#angler1,
+#angler2,#lucky,#projectile,#gears{
     display: none;
 }
