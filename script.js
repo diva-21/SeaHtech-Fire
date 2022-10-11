@@ -557,26 +557,49 @@ window.addEventListener("load", () => {
   class Explosion{
     constructor(game,x,y){
       this.game=game;
-      this.x=x;
-      this.y=y;
       this.frameX=0;
       this.spriteHeight=200;
       //animation speed
-      this.fps=15;
+      this.fps=30;
       this.timer=0; 
       this.interval=1000/this.fps;
       this.markedForDeletion=false
-
+      this.maxFrame=8;
     }
     update(deltaTime){
-      this.frameX++;
+      this.x -= this.game.speed
+      // periodic event on explosion
+      //if u get less, then incre the frame and make timer as 0
+      if(this.timer>this.interval){
+        this.frameX++;
+        this.timer=0;
+      }
+      else{
+        this.timer+=deltaTime
+      }
+      
+      if(this.frameX>this.maxFrame) this.markedForDeletion=true;
     }
     draw(context){
-      context.drawImage(this.image,this.x,this.y)
+      context.drawImage(this.image,this.frameX*this.spriteWidth,0,this.spriteWidth,this.spriteHeight,this.x,this.y,this.width,this.height)
     }
   }
 
   class SmokeExplosion extends Explosion{
+    // smoke explosion on 2 cases, one will collision with enemy
+    // on  call for explosion on complete defeat of enemy with projectile
+    constructor(game,x,y){
+      super(game,x,y)
+      // this.game=game
+      // moving the cords to half the way
+      this.image=document.getElementById('smokeExplosion');
+      // console.log(this.image);
+      this.spriteWidth=200; //each fire in the frame is of this widht
+      this.width=this.spriteWidth;
+      this.height=this.spriteHeight;
+      this.x=x-this.width * 0.5;
+      this.y=y-this.height * 0.5;
+    }
 
   }
   class FireExplosion extends Explosion{
@@ -682,6 +705,8 @@ window.addEventListener("load", () => {
       this.debug = false; // at teh start it wont come, if need press d
       // phsycis on particles
       this.particles=[]
+      //explosions
+      this.explosions=[]
     }
     update(deltaTime) {
       // time limit feature
@@ -703,9 +728,14 @@ window.addEventListener("load", () => {
       }
       //**Physics on partiles **/
       this.particles.forEach(particle=>particle.update());
-      this.particles=this.particles.filter(particle=>!particle.markedForDeletion) // same as projectile model
+      this.particles=this.particles.filter(particle=>!particle.markedForDeletion) //3$3
+      // explosion [property]
+      this.explosions.forEach(explosion=>explosion.update(deltaTime));
+      this.explosions=this.explosions.filter(explosion=>!explosion.markedForDeletion)
+      // same as projectile model 3$3
       // same as we did periodic for bullet , we have to do for
       // enermy
+
       this.enemies.forEach((enemy) => {
         enemy.update();
         // so for each enermy we will check for its collision with
@@ -714,7 +744,8 @@ window.addEventListener("load", () => {
         if (this.checkCollision(this.player, enemy)) {
           // then mark del flag of that enemy as true
           enemy.markedForDeletion = true;
-
+          // on collision, call the explosion
+          this.addExplosion(enemy);
           // nuts and bolts padali enemy vs players
           // no of bolts=enemey.score
           for(let i=0;i<enemy.score;i++){
@@ -744,6 +775,8 @@ window.addEventListener("load", () => {
             this.particles.push(new Particle(this,enemy.x+enemy.width*0.5,enemy.y+enemy.height*0.5))
           }
             enemy.markedForDeletion = true;
+            // call for explosion on complete defeat of enemy with projectile
+            this.addExplosion(enemy);
             //drone inside the whale feature
             if(enemy.type==='hive'){
               // then create new drone objs with this, and whale cords
@@ -776,13 +809,14 @@ window.addEventListener("load", () => {
       this.background.draw(context); // this contains only 3 lyrs
       this.ui.draw(context);
       this.player.draw(context);
-      
       //**particle physics */
       this.particles.forEach(particle=>particle.draw(context));
       // */*
       this.enemies.forEach((enemy) => {
         enemy.draw(context);
       });
+      // explosion feature
+      this.explosions.forEach(explosion=>explosion.draw(context));
       this.background.layer4.draw(context); // this is ly4, draw bcz to overcome
       // -its overlapping on player draw
     }
@@ -798,7 +832,12 @@ window.addEventListener("load", () => {
       else if (randomize < 0.8) this.enemies.push(new HiveWhale(this));
       else this.enemies.push(new LuckyFish(this));
     }
-
+    // explosion on enemy 
+    addExplosion(enemy){
+      const randomize = Math.random();
+      if(randomize<1) this.explosions.push(new SmokeExplosion(this,enemy.x+enemy.width*0.5,enemy.y+enemy.height*0.5)) //since explosions are coming on left of the enemy,we make it into middle by adding half of width/height of thenemy
+      // console.log(this.explosions);
+    }
     //*********//
     // beautiful collision check is done below
     // consider two rectangles R1(x1,y1,w1,h1) & R2(x2,y2,w2,h2)
@@ -843,8 +882,9 @@ window.addEventListener("load", () => {
     // console.log(deltaTime);
     // this will clear out the previous drawn in the rectangle range
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    game.update(deltaTime);
     game.draw(ctx);
+    game.update(deltaTime);
+    
     requestAnimationFrame(animate); // it redeners the timestamp ref of the current animation froame
   }
   animate(0);
