@@ -656,11 +656,11 @@ window.addEventListener("load", () => {
         context.textAlign = "center";
         let message1, message2;
         if (this.game.score > this.game.winningScore) {
-          message1 = "Most Wonderous!";
+          message1 = "Wonderous Win!";
           message2 = "Well Done";
         } else {
-          message1 = "Blazes!";
-          message2 = "Get my repair kit";
+          message1 = "Blaze Looser!";
+          message2 = "Bro,Get my repair kit";
         }
         context.font = "70px " + this.fontFamily;
         context.fillText(
@@ -714,7 +714,7 @@ window.addEventListener("load", () => {
       this.gameOver = false; // to check whether game is over or not
       //** score board display**/
       this.score = 0;
-      this.winningScore = 1000; // to increase diff
+      this.winningScore = 2000; // to increase diff
       // ** game time limit** //
       this.gameTime = 0;
       this.timeLimit = 30000;
