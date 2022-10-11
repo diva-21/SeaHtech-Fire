@@ -1,7 +1,7 @@
 window.addEventListener("load", () => {
   const canvas = document.getElementById("canvas1");
   const ctx = canvas.getContext("2d");
-  canvas.width = 1500;
+  canvas.width = 1000;
   canvas.height = 500;
 
   // used for handling user inputs
@@ -69,6 +69,7 @@ window.addEventListener("load", () => {
         context.drawImage(this.image,this.x,this.y)
     }
   }
+
   // handling bolts and things
   // this class makes deathed (lol) enemy to bolts and nuts
   class Particle {
@@ -376,7 +377,7 @@ window.addEventListener("load", () => {
       this.frameY = Math.floor(Math.random() * 3);
 
       // lives and score for each enemy
-      this.lives = 2;
+      this.lives = 5;
       this.score = this.lives;
     }
   }
@@ -400,7 +401,7 @@ window.addEventListener("load", () => {
       this.frameY = Math.floor(Math.random() * 2);
 
       // lives and score for each enemy
-      this.lives = 3;
+      this.lives = 6;
       this.score = this.lives;
     }
   }
@@ -424,7 +425,7 @@ window.addEventListener("load", () => {
             this.frameY=Math.floor(Math.random() * 2)
 
              // lives and score for each enemy
-            this.lives=3;
+            this.lives=5;
             this.score=15;
             // lucky property
             this.type='lucky'
@@ -450,7 +451,7 @@ window.addEventListener("load", () => {
               this.frameY=0
   
                // lives and score for each enemy
-              this.lives=15;
+              this.lives=20;
               this.score=this.lives;
               // Hive property
               this.type='hive'
@@ -701,22 +702,22 @@ window.addEventListener("load", () => {
       // here for recharge of bullets ,we need 3 vars
       this.ammoTimer = 0; // this is a counter
       // from 0 to a ammoInterval (it takes deltaTime on each incre)
-      this.ammoInterval = 500;
+      this.ammoInterval = 350;
       // we need a max ammo , to make bullets as finite
       this.maxAmmo = 50;
       //*****//
       this.enemies = []; // this will hold the enemy objs info
       // 3 periodic vars for enemies
       this.enemyTimer = 0; // which is same as ammo timer
-      this.enemyInterval = 1000; // so for every 1sec of time, we want to
+      this.enemyInterval = 2000; // so for every 1sec of time, we want to
       // create enemies
       this.gameOver = false; // to check whether game is over or not
       //** score board display**/
       this.score = 0;
-      this.winningScore = 10;
+      this.winningScore = 500; // to increase diff
       // ** game time limit** //
       this.gameTime = 0;
-      this.timeLimit = 15000;
+      this.timeLimit = 30000;
       //* game graphics * */
       this.speed = 1;
       this.background = new Background(this);
@@ -775,7 +776,7 @@ window.addEventListener("load", () => {
             // when its a power up , then start powerup function
           if(enemy.type==='lucky') this.player.enterPowerUp()
           // else when u colide with non lucky fish, then decre score
-          else this.score--;
+          else if(!this.gameOver) this.score--; // decrease the score only when game is not over
         }
         // foreach bullet from this player, if it hits enemy,
         // decrease the enemy life and remove the bullet and
@@ -805,7 +806,8 @@ window.addEventListener("load", () => {
             }
             // increase the score only if game is still no over
             if (!this.gameOver) this.score += enemy.score;
-            if (this.score > this.winningScore) this.gameOver = true;
+            // *** changing feature to game only ends in 30 secs
+            //if (this.score > this.winningScore) this.gameOver = true;
           }
         });
       });
@@ -848,7 +850,8 @@ window.addEventListener("load", () => {
       const randomize = Math.random();
       if (randomize < 0.3) this.enemies.push(new Angler1(this));
       else if (randomize < 0.6) this.enemies.push(new Angler2(this));
-      else if (randomize < 0.8) this.enemies.push(new HiveWhale(this));
+      // changing to 0.7 to have less whales
+      else if (randomize < 0.7) this.enemies.push(new HiveWhale(this));
       else this.enemies.push(new LuckyFish(this));
     }
     // explosion on enemy 
