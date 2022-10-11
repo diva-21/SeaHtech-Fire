@@ -1,7 +1,7 @@
 window.addEventListener("load", () => {
   const canvas = document.getElementById("canvas1");
   const ctx = canvas.getContext("2d");
-  canvas.width = 1000;
+  canvas.width = 1500;
   canvas.height = 500;
 
   // used for handling user inputs
@@ -702,7 +702,7 @@ window.addEventListener("load", () => {
       // here for recharge of bullets ,we need 3 vars
       this.ammoTimer = 0; // this is a counter
       // from 0 to a ammoInterval (it takes deltaTime on each incre)
-      this.ammoInterval = 350;
+      this.ammoInterval = 450;
       // we need a max ammo , to make bullets as finite
       this.maxAmmo = 50;
       //*****//
@@ -714,7 +714,7 @@ window.addEventListener("load", () => {
       this.gameOver = false; // to check whether game is over or not
       //** score board display**/
       this.score = 0;
-      this.winningScore = 500; // to increase diff
+      this.winningScore = 1000; // to increase diff
       // ** game time limit** //
       this.gameTime = 0;
       this.timeLimit = 30000;
