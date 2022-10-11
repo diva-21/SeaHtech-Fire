@@ -559,12 +559,18 @@ window.addEventListener("load", () => {
       this.game=game;
       this.frameX=0;
       this.spriteHeight=200;
+      this.spriteWidth=200; // making this as global for child classes
       //animation speed
       this.fps=30;
       this.timer=0; 
       this.interval=1000/this.fps;
       this.markedForDeletion=false
       this.maxFrame=8;
+      // for child classes
+      this.width=this.spriteWidth;
+      this.height=this.spriteHeight;
+      this.x=x-this.width * 0.5;
+      this.y=y-this.height * 0.5;
     }
     update(deltaTime){
       this.x -= this.game.speed
@@ -584,7 +590,7 @@ window.addEventListener("load", () => {
       context.drawImage(this.image,this.frameX*this.spriteWidth,0,this.spriteWidth,this.spriteHeight,this.x,this.y,this.width,this.height)
     }
   }
-
+// for child explosiosn , the cords are removed as they are now gloal in parent clas
   class SmokeExplosion extends Explosion{
     // smoke explosion on 2 cases, one will collision with enemy
     // on  call for explosion on complete defeat of enemy with projectile
@@ -594,16 +600,29 @@ window.addEventListener("load", () => {
       // moving the cords to half the way
       this.image=document.getElementById('smokeExplosion');
       // console.log(this.image);
-      this.spriteWidth=200; //each fire in the frame is of this widht
-      this.width=this.spriteWidth;
-      this.height=this.spriteHeight;
-      this.x=x-this.width * 0.5;
-      this.y=y-this.height * 0.5;
+    //  this.spriteWidth=200; //each fire in the frame is of this widht
+      // this.width=this.spriteWidth;
+      // this.height=this.spriteHeight;
+      // this.x=x-this.width * 0.5;
+      // this.y=y-this.height * 0.5;
     }
 
   }
   class FireExplosion extends Explosion{
-
+    // smoke explosion on 2 cases, one will collision with enemy
+    // on  call for explosion on complete defeat of enemy with projectile
+    constructor(game,x,y){
+      super(game,x,y)
+      // this.game=game
+      // moving the cords to half the way
+      this.image=document.getElementById('fireExplosion');
+      // console.log(this.image);
+     // this.spriteWidth=200; //each fire in the frame is of this widht
+      // this.width=this.spriteWidth;
+      // this.height=this.spriteHeight;
+      // this.x=x-this.width * 0.5;
+      // this.y=y-this.height * 0.5;
+    }
   }
   // Score , timer, ammo sticks on the top etc
   class UI {
@@ -835,8 +854,11 @@ window.addEventListener("load", () => {
     // explosion on enemy 
     addExplosion(enemy){
       const randomize = Math.random();
-      if(randomize<1) this.explosions.push(new SmokeExplosion(this,enemy.x+enemy.width*0.5,enemy.y+enemy.height*0.5)) //since explosions are coming on left of the enemy,we make it into middle by adding half of width/height of thenemy
+      if(randomize<0.5) this.explosions.push(new SmokeExplosion(this,enemy.x+enemy.width*0.5,enemy.y+enemy.height*0.5)) //since explosions are coming on left of the enemy,we make it into middle by adding half of width/height of thenemy
       // console.log(this.explosions);
+      else{
+        this.explosions.push(new FireExplosion(this,enemy.x+enemy.width*0.5,enemy.y+enemy.height*0.5)) //since explosions are coming on left of the enemy,we make it into middle by adding half of width/height of thenemy
+      }
     }
     //*********//
     // beautiful collision check is done below
