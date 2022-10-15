@@ -717,7 +717,7 @@ window.addEventListener("load", () => {
       this.winningScore = 2000; // to increase diff
       // ** game time limit** //
       this.gameTime = 0;
-      this.timeLimit = 30000;
+      this.timeLimit = 35000;
       //* game graphics * */
       this.speed = 1;
       this.background = new Background(this);
